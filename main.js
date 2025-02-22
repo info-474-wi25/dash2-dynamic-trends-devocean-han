@@ -22,8 +22,26 @@ const svg2_RENAME = d3.select("#lineChart2")
 // const tooltip = ...
 
 // 2.a: LOAD...
-d3.csv("YOUR_CSV_NAME.csv").then(data => {
+d3.csv("weather.csv").then(data => {
+    // Relevant columns: 
+    // - date (x variable)
+    // - actual_mean_temp (y variable)
+    // - city_full (color category variable)
+
     // 2.b: ... AND TRANSFORM DATA
+    // Reformatting
+    data.forEach(d => {
+        d.daily_mean_temp = +d["actual_mean_temp(C)"]; // Convert temperature value to a number
+        d.date = new Date(d.date);
+    })
+    console.log(typeof data[0]["daily_mean_temp"])
+    // Grouping
+    const groupedByCityData = d3.rollup(
+        data, 
+        v => v.map(d => ({ date: d.date, temp: d.daily_mean_temp })), // Create array of objects {date, temp}
+        d => d.city_full // Group by city
+    )
+    console.log(groupedByCityData)
 
     // 3.a: SET SCALES FOR CHART 1
 
