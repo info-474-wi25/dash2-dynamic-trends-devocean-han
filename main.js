@@ -68,13 +68,31 @@ d3.csv("weather.csv").then(data => {
     // Filtered Data
     // filteredCityTempData = groupedByCityData['']
     console.log("array.from test: ", Array.from(groupedByCityData))
+    
+    // Flattened Data for use in dropdown and update function
+    const flattenedData = [];
+    // console.log("grouped data:", groupedByCityData)
+    groupedByCityData.forEach((data, cityKey) => {
+        data.forEach(({date, temp}) => {
+            flattenedData.push({ city: cityKey, date, temp });
+        });        
+        // data.forEach(d => {
+        //     flattenedData.push({ city: cityKey, date: d.date, temp: d.temp });
+        // });
+    });
+    console.log("flattenedData: ", flattenedData);
+    console.log("flattenedData2: ", flattenedData[2189]);
+    console.log("flattenedData3: ", flattenedData[2189]['city']);
+
     // 4.a: PLOT DATA FOR CHART 1
-    // const dataArray = Array.from()
+    // 도시별로 데이터를 그룹화
+    const flattenedFilteredData = d3.group(
+        flattenedData.filter(d => d.city === "Phoenix, AZ" || d.city === "Philadelphia, PA"),
+        d => d.city
+    );
     svgLine.selectAll("path")
         // .data(groupedByCityData.entries())
-        .data(Array.from(groupedByCityData) // Map을 배열로 변환
-            .filter(d => d[0] === "Phoenix, AZ" || d[0] === "Philadelphia, PA") // 원하는 도시만 선택
-        )
+        .data(flattenedFilteredData)
         // [["Indianapolis, IN",  [{date:, temp:}, {date:, temp:}]],
         //  ["Charlotte, NC",     [{}, {}, {}, ...]],
         //  ["Chicago (Midway), IL", [{}, {}, ...]],
@@ -84,10 +102,11 @@ d3.csv("weather.csv").then(data => {
         .enter()
         .append("path")
         .attr("d", d => d3.line()
-            .x(d => xScale(d.date))
-            .y(d => yScale(d.temp))(d[1])
+            .x(d => xScale(d["date"]))
+            .y(d => yScale(d["temp"]))(d[1])
         )
         .style("stroke", d => colorScale(d[0]))
+        // .style("stroke", d => colorScale(d["city"]))
         .style("fill", "none")
         .style("stroke-width", 2);
 
@@ -162,8 +181,102 @@ d3.csv("weather.csv").then(data => {
         .attr("text-anchor", "start")
         // .style("alignment-baseline", "middle");
 
-    // 7.a: ADD INTERACTIVITY FOR CHART 1
-    
+    // // 7.a: ADD INTERACTIVITY FOR CHART 1
+    // function updateChart(selectedCity) {
+    //     // Filter the data based on the selected category
+    //     const selectedCityData = flattenedData.filter(d => d.city === selectedCity);
+    //     // const selectedCitiesData = flattenedData.filter(d => d.city === selectedCity);
+
+    //     // Remove existing line
+    //     svgLine.selectAll("path").remove();
+        
+    //     // Redraw lines
+    //     svgLine.selectAll("path")
+    //         .data(selectedCityData)
+    //         .enter()
+    //         .append("path")
+    //         .attr("d", d3.line()
+    //             .x(d => xScale(d.date))
+    //             .y(d => yScale(d.temp))
+    //         )
+    //         .style("stroke", d => colorScale(d[0]))
+    //         // .style("stroke", d => colorScale(d["city"]))
+    //         .style("fill", "none")
+    //         .style("stroke-width", 2);
+    // }
+    // 7.b: ADD INTERACTIVITY FOR CHART 1
+    function updateChart(selectedCities) {
+        console.log("selectedCities: ", selectedCities)
+        // Filter the data based on the selected category
+        const selectedCitiesData = selectedCities.map(city => ({
+            city, 
+            data: flattenedData.filter(d => d.city === city)
+        }));
+
+        // Remove existing line
+        svgLine.selectAll("path").remove();
+
+        // Bind each category's data to its own path
+        const lines = svgLine.selectAll("path").data(selectedCitiesData);
+        
+        // Redraw lines
+        lines.enter()
+            .append("path")
+            .attr("d", d => d3.line()
+                .x(d => xScale(d.date))
+                .y(d => yScale(d.temp))(d.data)
+            )
+            .style("stroke", d => colorScale(d.city))
+            // .style("stroke", d => colorScale(d[0]))
+            // .style("stroke", d => colorScale(d["city"]))
+            .style("fill", "none")
+            .style("stroke-width", 2);
+
+        // Update existing lines (if any)
+        lines.attr("d", d => d3.line()
+                .x(d => xScale(d.date))
+                .y(d => yScale(d.temp))(d.data)
+            );
+
+        // Remove unused lines
+        lines.exit().remove();
+
+        // Remove existing legend:
+        svgLine.selectAll(".legend").remove();
+
+        // Redraw legend
+        const legend = svgLine.selectAll(".legend")
+            .data(selectedCities)
+            .enter()
+            .append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(${width - 150}, ${i * 20 - 30})`);
+
+        legend.append("rect")
+            .attr("x", 10)
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", d => colorScale(d));
+
+        legend.append("text")
+            .attr("x", 30)
+            .attr("y", 10)
+            .text(d => d)
+            .attr("text-anchor", "start");
+    }
+
+    // Set "Phoenix, AZ" as the default city
+    // updateChart("Phoenix, AZ");
+
+    // Event Listeners
+    d3.select("#categorySelect").on("change", function() {
+        // var selectedCity = d3.select(this).property("value");
+        selectedArray = Array.from(d3.select("#categorySelect").node().selectedOptions)
+        console.log("selected Array: ", selectedArray)
+        const selectedCities = selectedArray.map(option => option.value);
+        console.log("selected cities: ", selectedCities)
+        updateChart(selectedCities);
+    });
 
     // ==========================================
     //         CHART 2 (if applicable)

@@ -11,35 +11,38 @@
     <!-- HEADER -->
     <div class="item">
         <h1>Weather Dynamic Trends Dashboard</h1>
-        <p><strong>Author(s): </strong>Hannah Kim</p>
-        <p><strong>Documentation:</strong> <a href="https://docs.google.com/document/d/1BxwnUT3nloNDq-oXSUVbwVSM7HW7tKOemRlyXX8ZA8o/edit?tab=t.0" target="_blank">Classwork 8 - Code Static Draft (will replace with the final project documentation)</a></p>
+        <p><strong>Author: </strong>Hannah Kim</p>
+        <p><strong>Documentation:</strong> <a href="https://docs.google.com/document/d/1tDYLygV7MwhTtuiOOtSQ82q0qc8LaUfKCPJlUKq9pQk/edit?tab=t.0" target="_blank">Classwork 9 - Code Interactive Draft (will replace with the final project documentation)</a></p>
     </div>
     
     <!-- INTERACTIVE WIDGETS -->
     <div class="item horizontal-container">
-        <div class="item"><!-- Your widget 1 code goes here. -->
-            <!-- Widget 1 title -->
-            <!-- Widget 1 element -->
-        </div>
-
-        <!-- DELETE THE FOLLOWING DIV IF YOU ONLY HAVE 1 WIDGET. -->
-        <div class="item"><!-- Your widget 2 code goes here. -->
-            <!-- Widget 2 title -->
-            <!-- Widget 2 element -->
+        <!-- Category Type Dropdown -->
+        <div class="item">
+            <label for="categorySelect">Select Cities:
+                <span style="font-size: 0.9em; color: gray;">(Choose multiple through mouse drag or Ctrl + click)</span>
+            </label>
+            <div class="select-container">
+                <select id="categorySelect" multiple>
+                    <!-- <option value="All">All</option> -->
+                    <option value="Charlotte, NC">Charlotte, NC</option>
+                    <option value="Chicago (Midway), IL">Chicago (Midway), IL</option>
+                    <option value="Indianapolis, IN">Indianapolis, IN</option>
+                    <option value="Jacksonville, FL">Jacksonville, FL</option>
+                    <option value="Philadelphia, PA">Philadelphia, PA</option>
+                    <option value="Phoenix, AZ">Phoenix, AZ</option>
+                </select>
+            </div>
         </div>
     </div>
-
+</div>
     <!-- CHART(S) -->
     <div class="item chart-container">
-        <h2>Daily Temperature Comparison Between West (Phoenix, AZ) <br/>
-        and East (Philadelphia, PA) Cities of the U.S. (2014-2015)</h2>
+        <!-- <h2>Daily Temperature Comparison Between West (Phoenix, AZ) <br/>
+        and East (Philadelphia, PA) Cities of the U.S. (2014-2015)</h2> -->
+        <h2>Daily Mean Temperature Trends in 6 Different U.S. Cities (2014–2015)</h2>
         <svg id="lineChart1" width="900" height="800"></svg> <!-- If you change this ID name, you must change it in main.js too -->
     </div>
-    <!-- DELETE THE FOLLOWING DIV IF YOU ONLY HAVE 1 CHART. -->
-    <!-- <div class="item chart-container">
-        <h2>[Chart 2 Title]</h2>
-        <svg id="lineChart2" width="900" height="400"></svg>
-    </div> -->
     <script src="main.js"></script>
 </body>
 </html>
