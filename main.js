@@ -1,7 +1,7 @@
 // 1: SET GLOBAL VARIABLES
-const margin = { top: 50, right: 30, bottom: 60, left: 70 };
-const width = 900 - margin.left - margin.right;
-const height = 800 - margin.top - margin.bottom;
+const margin = { top: 110, right: 30, bottom: 60, left: 70 };
+const width = 700 - margin.left - margin.right;
+const height = 500 - margin.top - margin.bottom;
 
 // Create SVG containers for both charts
 const svgLine = d3.select("#lineChart1") // If you change this ID, you must change it in index.html too
@@ -10,16 +10,6 @@ const svgLine = d3.select("#lineChart1") // If you change this ID, you must chan
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
-
-const svg2_RENAME = d3.select("#lineChart2")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-
-// (If applicable) Tooltip element for interactivity
-// const tooltip = ...
 
 // 2.a: LOAD...
 d3.csv("weather.csv").then(data => {
@@ -67,7 +57,7 @@ d3.csv("weather.csv").then(data => {
 
     // Filtered Data
     // filteredCityTempData = groupedByCityData['']
-    console.log("array.from test: ", Array.from(groupedByCityData))
+    // console.log("array.from test: ", Array.from(groupedByCityData))
     
     // Flattened Data for use in dropdown and update function
     const flattenedData = [];
@@ -80,9 +70,9 @@ d3.csv("weather.csv").then(data => {
         //     flattenedData.push({ city: cityKey, date: d.date, temp: d.temp });
         // });
     });
-    console.log("flattenedData: ", flattenedData);
-    console.log("flattenedData2: ", flattenedData[2189]);
-    console.log("flattenedData3: ", flattenedData[2189]['city']);
+    // console.log("flattenedData: ", flattenedData);
+    // console.log("flattenedData2: ", flattenedData[2189]);
+    // console.log("flattenedData3: ", flattenedData[2189]['city']);
 
     // 4.a: PLOT DATA FOR CHART 1
     // 도시별로 데이터를 그룹화
@@ -112,41 +102,56 @@ d3.csv("weather.csv").then(data => {
 
     // 5.a: ADD AXES FOR CHART 1
     svgLine.append("g")
+        .attr("class", "axis")
+        .attr("class", "x-axis")
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(xScale)
-            .ticks(7) // x축에 약 6~8개의 주요 tick을 표시하도록 조정
-            .tickFormat(d3.timeFormat("%b %d, %y")) // "Jul 1, 14" 형식
-        );
+            .ticks(5) // x축에 약 6~8개의 주요 tick을 표시하도록 조정
+            .tickFormat(d3.timeFormat("%b %d")) // "Jul 1" 형식
+            // .tickFormat(d3.timeFormat("%b %d, %y")) // "Jul 1, 14" 형식
+        )
+        .selectAll(".tick text") // tick의 텍스트 선택
+        .style("font-size", "13px"); // 글씨 크기 조정
     svgLine.append("g")
-        .call(d3.axisLeft(yScale));
+        .attr("class", "axis")
+        .attr("class", "y-axis")
+        .call(d3.axisLeft(yScale))
+        .selectAll(".tick text") // y축 tick의 텍스트 선택
+        .style("font-size", "13px"); // 글씨 크기 조정;
 
     // 6.a: ADD LABELS FOR CHART 1
-    // svgLine.append("text")
-    //     .text(`Daily Temperature Comparison Between West (Phoenix, AZ) 
-    //     and East (Philadelphia, PA) Cities of the U.S. (2014-2015)`)
-    //     .attr("class", "title")
-    //     .attr("x", width / 2)
-    //     .attr("y", -margin.top / 2)
-    //     .attr("text-anchor", "middle")
-    //     .style("font-size", "16px")
-    //     .style("font-weight", "bold")
+    svgLine.append("text")
+        .attr("class", "title")
+        .attr("x", width / 2)
+        .attr("y", -margin.top / 2 - 30)
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .append("tspan") // 첫 번째 줄
+        .text("How U.S. Cities Warm and Cool:")
+        .attr("x", width / 2)
+        .attr("dy", "0") // 첫 줄 위치 유지
+        .append("tspan") // 두 번째 줄
+        .text("A Year of Daily Temperatures (2014–2015)")
+        .attr("x", width / 2)
+        .attr("dy", "1.2em"); // 두 번째 줄을 첫 번째 줄 아래로 내림
 
     // 7.b: X-axis label
-    // - Add a text element below the x-axis to describe it (e.g., "Year").
+    // - Add a text element below the x-axis to describe it.
     svgLine.append("text")
         .text("Date (Jul 2014 - June 2015)")
         .attr("class", "axis-label")
         .attr("x", width / 2)
-        .attr("y", height + margin.bottom - 15)
+        .attr("y", height + margin.bottom - 10)
         .attr("text-anchor", "middle")
     // 7.c: Y-axis label
-    // - Add a rotated text element beside the y-axis to describe it (e.g., "Number of Laureates").
+    // - Add a rotated text element beside the y-axis to describe it.
     svgLine.append("text")
         .text("Daily Mean Temperature (C)")
         .attr("class", "axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left / 2)
-        .attr("x", -height / 2 + 10)
+        .attr("y", -margin.left / 2 - 10)
+        .attr("x", -height / 2 )
         .attr("text-anchor", "middle")
     
     // 8: LEGEND
@@ -179,31 +184,9 @@ d3.csv("weather.csv").then(data => {
         .attr("x", 30)
         .attr("y", 10)
         .attr("text-anchor", "start")
-        // .style("alignment-baseline", "middle");
+        // .style("alignment-baseline", "middle")
+        .style("font-size", "13px");
 
-    // // 7.a: ADD INTERACTIVITY FOR CHART 1
-    // function updateChart(selectedCity) {
-    //     // Filter the data based on the selected category
-    //     const selectedCityData = flattenedData.filter(d => d.city === selectedCity);
-    //     // const selectedCitiesData = flattenedData.filter(d => d.city === selectedCity);
-
-    //     // Remove existing line
-    //     svgLine.selectAll("path").remove();
-        
-    //     // Redraw lines
-    //     svgLine.selectAll("path")
-    //         .data(selectedCityData)
-    //         .enter()
-    //         .append("path")
-    //         .attr("d", d3.line()
-    //             .x(d => xScale(d.date))
-    //             .y(d => yScale(d.temp))
-    //         )
-    //         .style("stroke", d => colorScale(d[0]))
-    //         // .style("stroke", d => colorScale(d["city"]))
-    //         .style("fill", "none")
-    //         .style("stroke-width", 2);
-    // }
     // 7.b: ADD INTERACTIVITY FOR CHART 1
     function updateChart(selectedCities) {
         console.log("selectedCities: ", selectedCities)
@@ -241,6 +224,17 @@ d3.csv("weather.csv").then(data => {
         // Remove unused lines
         lines.exit().remove();
 
+        // Redraw axes
+        svgLine.select(".x-axis")
+            .call(d3.axisBottom(xScale)
+                .ticks(5)
+                .tickFormat(d3.timeFormat("%b %d"))
+            );
+
+        svgLine.select(".y-axis")
+            .call(d3.axisLeft(yScale));
+
+
         // Remove existing legend:
         svgLine.selectAll(".legend").remove();
 
@@ -262,7 +256,8 @@ d3.csv("weather.csv").then(data => {
             .attr("x", 30)
             .attr("y", 10)
             .text(d => d)
-            .attr("text-anchor", "start");
+            .attr("text-anchor", "start")
+            .style("font-size", "13px");
     }
 
     // Set "Phoenix, AZ" as the default city
@@ -277,24 +272,5 @@ d3.csv("weather.csv").then(data => {
         console.log("selected cities: ", selectedCities)
         updateChart(selectedCities);
     });
-
-    // ==========================================
-    //         CHART 2 (if applicable)
-    // ==========================================
-
-    // 3.b: SET SCALES FOR CHART 2
-
-
-    // 4.b: PLOT DATA FOR CHART 2
-
-
-    // 5.b: ADD AXES FOR CHART 
-
-
-    // 6.b: ADD LABELS FOR CHART 2
-
-
-    // 7.b: ADD INTERACTIVITY FOR CHART 2
-
 
 });

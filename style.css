@@ -206,3 +206,10 @@ a:hover {
 }
 
 /* CSS generated with assistance from ChatGPT and DeepSeek. */
+
+/* X, Y axes text font size */
+.axis-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
